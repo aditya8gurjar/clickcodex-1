@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- ==========================================================================
+       ADVANCED SEO META TAGS
+       ========================================================================== -->
+  <title>Building Sub-10ms Global APIs with Edge Computing | ClickCodex Engineering</title>
+  <meta name="description" content="Learn how ClickCodex re-architected high-throughput financial APIs with Rust microservices and distributed edge nodes to achieve sub-10ms global latency and 99.999% uptime." />
+  <meta name="keywords" content="edge computing APIs, Rust microservices, Cloudflare Workers, Fastly Compute, distributed CRDTs, sub-10ms latency, high-throughput fintech architecture" />
+  <meta name="author" content="Vikramaditya Roy, ClickCodex Technologies" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://clickcodex.com/blog-detail.html" />
+  <meta name="theme-color" content="#0056d6" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="ClickCodex Technologies" />
+  <meta property="og:url" content="https://clickcodex.com/blog-detail.html" />
+  <meta property="og:title" content="Building Sub-10ms Global APIs with Edge Computing and Rust Microservices" />
+  <meta property="og:description" content="A deep architectural breakdown of how ClickCodex eliminated global latency spikes, handled 240,000 req/sec, and slashed cloud spend by 68%." />
+  <meta property="og:image" content="https://clickcodex.com/logo.png" />
+  <meta property="og:image:alt" content="ClickCodex Edge Computing & Rust Microservices Architecture" />
+  <meta property="article:published_time" content="2026-09-18T08:00:00+05:30" />
+  <meta property="article:modified_time" content="2026-09-22T14:30:00+05:30" />
+  <meta property="article:author" content="Vikramaditya Roy" />
+  <meta property="article:section" content="Architecture & Scale" />
+  <meta property="article:tag" content="Edge Computing" />
+  <meta property="article:tag" content="Rust" />
+  <meta property="article:tag" content="Cloud Architecture" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@ClickCodex" />
+  <meta name="twitter:creator" content="@ClickCodex" />
+  <meta name="twitter:title" content="Building Sub-10ms Global APIs with Edge Computing | ClickCodex" />
+  <meta name="twitter:description" content="Deep dive into zero-lock CRDT synchronization and Rust edge proxies handling 240k req/sec with sub-10ms latency." />
+  <meta name="twitter:image" content="https://clickcodex.com/logo.png" />
+
+  <!-- Google Fonts: Poppins & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://clickcodex.com/#organization",
+        "name": "ClickCodex Technologies",
+        "url": "https://clickcodex.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://clickcodex.com/logo.png"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://clickcodex.com/index.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blogs & Insights",
+            "item": "https://clickcodex.com/blogs.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Building Sub-10ms Global APIs",
+            "item": "https://clickcodex.com/blog-detail.html"
+          }
+        ]
+      },
+      {
+        "@type": "BlogPosting",
+        "@id": "https://clickcodex.com/blog-detail.html#article",
+        "isPartOf": {
+          "@type": "Blog",
+          "@id": "https://clickcodex.com/blogs.html#blog"
+        },
+        "headline": "Building Sub-10ms Global APIs with Edge Computing and Rust Microservices",
+        "description": "Learn how ClickCodex re-architected high-throughput financial APIs with Rust microservices and distributed edge nodes to achieve sub-10ms global latency and 99.999% uptime.",
+        "image": "https://clickcodex.com/logo.png",
+        "datePublished": "2026-09-18T08:00:00+05:30",
+        "dateModified": "2026-09-22T14:30:00+05:30",
+        "author": {
+          "@type": "Person",
+          "name": "Vikramaditya Roy",
+          "jobTitle": "Chief Systems Architect",
+          "worksFor": {
+            "@id": "https://clickcodex.com/#organization"
+          }
+        },
+        "publisher": {
+          "@id": "https://clickcodex.com/#organization"
+        },
+        "mainEntityOfPage": "https://clickcodex.com/blog-detail.html",
+        "keywords": [
+          "Edge Computing",
+          "Rust",
+          "Microservices",
+          "Fintech",
+          "API Architecture",
+          "CRDTs",
+          "Cloud Scale"
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* ==========================================================================
+       RESET & BASE STYLES (LIGHT COLOR THEME)
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: #ffffff;
+      color: #0f172a;
+      line-height: 1.75;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Reading Progress Bar */
+    .reading-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 4px;
+      background: var(--gradient-logo-ribbon);
+      z-index: 10001;
+      transition: width 0.1s ease-out;
+    }
+
+    /* ==========================================================================
+       ARTICLE HERO SECTION (LIGHT THEME)
+       ========================================================================== */
+    .article-hero {
+      position: relative;
+      padding-top: calc(var(--nav-height) + 50px);
+      padding-bottom: 50px;
+      background: radial-gradient(circle at 50% 0%, rgba(0, 86, 214, 0.05) 0%, #ffffff 80%), #ffffff;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    /* Breadcrumbs */
+    .article-breadcrumbs {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    .article-breadcrumbs a {
+      color: #64748b;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .article-breadcrumbs a:hover {
+      color: var(--brand-blue);
+    }
+
+    .article-breadcrumbs span.sep {
+      color: #cbd5e1;
+    }
+
+    .article-breadcrumbs span.current {
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    /* Tags & Meta */
+    .article-meta-tags {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .article-category-badge {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(0, 86, 214, 0.08);
+      border: 1px solid rgba(0, 86, 214, 0.2);
+      color: var(--brand-blue);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .article-time-badge {
+      font-size: 0.86rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .article-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.8px;
+      color: #0f172a;
+      max-width: 950px;
+      margin-bottom: 20px;
+    }
+
+    .article-lead {
+      font-size: 1.2rem;
+      color: #475569;
+      line-height: 1.7;
+      max-width: 880px;
+      margin-bottom: 36px;
+    }
+
+    /* Author & Share Bar */
+    .author-share-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .author-card-snippet {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .author-avatar-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0056d6, #ff6a00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(0, 86, 214, 0.25);
+    }
+
+    .author-details-text strong {
+      display: block;
+      font-size: 1rem;
+      color: #0f172a;
+    }
+
+    .author-details-text span {
+      font-size: 0.84rem;
+      color: #64748b;
+    }
+
+    /* Share Buttons */
+    .share-buttons-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .share-btn:hover {
+      background: #f8fafc;
+      color: var(--brand-blue);
+      border-color: var(--brand-blue);
+      transform: translateY(-2px);
+    }
+
+    .share-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ==========================================================================
+       ARTICLE CONTENT LAYOUT (LIGHT THEME)
+       ========================================================================== */
+    .article-main-wrap {
+      padding: 60px 0 100px;
+      background: #ffffff;
+    }
+
+    .article-layout-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    /* Sticky Sidebar */
+    .article-sidebar {
+      position: sticky;
+      top: calc(var(--nav-height) + 30px);
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .toc-card {
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-card h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toc-nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toc-nav-list li a {
+      font-size: 0.88rem;
+      color: #64748b;
+      text-decoration: none;
+      display: block;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border-left: 2px solid transparent;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .toc-nav-list li a:hover {
+      color: var(--brand-blue);
+      background: rgba(0, 86, 214, 0.04);
+    }
+
+    .toc-nav-list li a.active {
+      color: var(--brand-blue);
+      font-weight: 700;
+      background: rgba(0, 86, 214, 0.08);
+      border-left-color: var(--brand-blue);
+    }
+
+    /* Sidebar Consultation CTA */
+    .sidebar-cta-card {
+      background: linear-gradient(135deg, rgba(0, 86, 214, 0.04) 0%, rgba(255, 106, 0, 0.04) 100%), #f8fafc;
+      border: 1px solid rgba(0, 86, 214, 0.15);
+      border-radius: 20px;
+      padding: 26px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+
+    .sidebar-cta-card h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .sidebar-cta-card p {
+      font-size: 0.86rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .sidebar-cta-btn {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 9999px;
+      background: var(--gradient-logo-ribbon);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0, 86, 214, 0.25);
+    }
+
+    .sidebar-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 86, 214, 0.4);
+    }
+
+    /* Article Body Typography */
+    .article-body-content {
+      max-width: 820px;
+      font-size: 1.1rem;
+      color: #334155;
+      line-height: 1.85;
+    }
+
+    /* Metrics Infographic Bar (Light Theme) */
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .metric-col {
+      text-align: center;
+    }
+
+    .metric-number {
+      font-family: var(--font-display);
+      font-size: 1.95rem;
+      font-weight: 800;
+      color: var(--brand-blue);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .article-body-content h2 {
+      font-family: var(--font-display);
+      font-size: 1.95rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 48px 0 20px;
+      scroll-margin-top: calc(var(--nav-height) + 20px);
+      letter-spacing: -0.5px;
+    }
+
+    .article-body-content h3 {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 32px 0 16px;
+      scroll-margin-top: calc(var(--nav-height) + 20px);
+    }
+
+    .article-body-content p {
+      margin-bottom: 24px;
+    }
+
+    .article-body-content ul, 
+    .article-body-content ol {
+      margin-bottom: 26px;
+      padding-left: 24px;
+    }
+
+    .article-body-content li {
+      margin-bottom: 10px;
+    }
+
+    .article-body-content strong {
+      color: #0f172a;
+    }
+
+    /* Callout Alert Box (Light Theme) */
+    .callout-box {
+      border-radius: 16px;
+      padding: 24px;
+      margin: 36px 0;
+      position: relative;
+      border: 1px solid rgba(0, 86, 214, 0.25);
+      background: rgba(0, 86, 214, 0.04);
+    }
+
+    .callout-box.tip {
+      border-color: rgba(16, 185, 129, 0.35);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .callout-box.warning {
+      border-color: rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .callout-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .callout-desc {
+      font-size: 0.98rem;
+      color: #334155;
+      margin-bottom: 0 !important;
+    }
+
+    /* Code Block with Copy Button */
+    .code-container {
+      position: relative;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      margin: 32px 0;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+    }
+
+    .code-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #1e293b;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+
+    .copy-code-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-code-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .code-content {
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .code-content .keyword { color: #f43f5e; font-weight: 600; }
+    .code-content .type { color: #38bdf8; }
+    .code-content .fn { color: #a855f7; }
+    .code-content .string { color: #34d399; }
+    .code-content .comment { color: #64748b; font-style: italic; }
+
+    /* System Architecture ASCII/SVG Flow (Light Theme) */
+    .system-diagram-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 30px;
+      margin: 40px 0;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .diagram-title-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brand-blue);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .arch-flow-svg {
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      display: block;
+    }
+
+    /* Comparison Table (Light Theme) */
+    .benchmark-table-wrap {
+      overflow-x: auto;
+      margin: 36px 0;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .benchmark-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+      background: #ffffff;
+    }
+
+    .benchmark-table th {
+      background: #f1f5f9;
+      padding: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .benchmark-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    .benchmark-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    .benchmark-table td.highlight-good {
+      color: #059669;
+      font-weight: 700;
+    }
+
+    /* Author Profile Card in Article Footer */
+    .author-full-card {
+      display: flex;
+      gap: 24px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 32px;
+      margin-top: 60px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .author-full-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0056d6, #ff6a00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(0, 86, 214, 0.25);
+    }
+
+    .author-full-content h4 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .author-full-content .author-role-text {
+      font-size: 0.85rem;
+      color: var(--brand-blue);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .author-full-content p {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    /* Related Articles (Light Theme) */
+    .related-articles-section {
+      padding: 60px 0;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .related-articles-section h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 32px;
+    }
+
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .related-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .related-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--brand-blue);
+      box-shadow: 0 10px 25px rgba(0, 86, 214, 0.1);
+    }
+
+    .related-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.4;
+      margin: 12px 0 16px;
+    }
+
+    /* Discussion Preview Card (Light Theme) */
+    .discussion-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 36px;
+      margin-top: 40px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .discussion-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 14px;
+    }
+
+    .comment-input-wrap textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      margin-bottom: 14px;
+      resize: vertical;
+    }
+
+    .comment-input-wrap textarea:focus {
+      border-color: var(--brand-blue);
+      background: #ffffff;
+    }
+
+    /* Toast Notification */
+    .copy-toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #10b981;
+      color: #ffffff;
+      padding: 12px 22px;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 10002;
+      pointer-events: none;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .article-layout-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .article-sidebar {
+        position: static;
+      }
+      .metrics-bar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .metrics-bar {
+        grid-template-columns: 1fr;
+      }
+      .author-full-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+
+    
+/* ==========================================================================
+   CLICKCODEX UNIFIED HEADER, FOOTER, MODAL & RESPONSIVE CSS
+   Extracted directly from index.html design system
+   ========================================================================== */
+
+/* Brand & Color Variables Fallback if not already in :root */
+:root {
+  --brand-blue: #0056d6;
+  --brand-blue-deep: #003896;
+  --brand-cyan: #00a2ff;
+  --brand-red: #e61e2b;
+  --brand-crimson: #c7121e;
+  --brand-orange: #ff6a00;
+  --brand-amber: #ffb300;
+  --brand-yellow: #ffd200;
+  --gradient-logo-ribbon: linear-gradient(135deg, #0056d6 0%, #00a2ff 28%, #ff6a00 68%, #e61e2b 100%);
+  --gradient-warm: linear-gradient(135deg, #e61e2b 0%, #ff6a00 52%, #ffb300 100%);
+  --bg-surface-light: #f8fafc;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --text-white: #ffffff;
+  --border-light: rgba(226, 232, 240, 0.8);
+  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --nav-height: 80px;
+}
+
+    /* ==========================================================================
+       3. NAVIGATION BAR (STICKY & GLASSMORPHIC)
+       ========================================================================== */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--nav-height);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .site-nav.scrolled {
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      height: 72px;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0, 86, 214, 0.2));
+      transition: transform 0.3s ease;
+    }
+
+    .brand-logo-wrap:hover .brand-logo-img {
+      transform: scale(1.05) rotate(-3deg);
+    }
+
+    .brand-name-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      color: var(--brand-blue-deep);
+    }
+
+    .brand-title span {
+      color: var(--brand-orange);
+    }
+
+    .brand-subtext {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      color: var(--brand-red);
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      position: relative;
+      padding: 6px 0;
+      transition: color 0.25s ease;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2.5px;
+      border-radius: 4px;
+      background: var(--gradient-logo-ribbon);
+      transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--brand-blue);
+    }
+
+    .nav-link:hover::after, .nav-link.active::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* WhatsApp Quick Button (Highly converts Indian & Global clients) */
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius-full);
+      background: #25d366;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .whatsapp-btn:hover {
+      background: #20ba59;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+
+    .whatsapp-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+    }
+
+    /* Primary CTA Button */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 28px;
+      border-radius: var(--radius-full);
+      background: var(--gradient-blue-cyan);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 0.94rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 86, 214, 0.3);
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2.5px);
+      box-shadow: 0 12px 30px rgba(0, 86, 214, 0.42);
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-warm {
+      background: var(--gradient-warm);
+      box-shadow: 0 8px 24px rgba(255, 106, 0, 0.32);
+    }
+
+    .btn-warm:hover {
+      box-shadow: 0 12px 30px rgba(255, 106, 0, 0.45);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 11px 26px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--brand-blue);
+      color: var(--brand-blue);
+      font-family: var(--font-display);
+      font-size: 0.94rem;
+      font-weight: 600;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline:hover {
+      background: var(--brand-blue);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 86, 214, 0.25);
+    }
+
+    /* Mobile Hamburger Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--bg-surface-light);
+      border: 1px solid var(--border-light);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-dark);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      width: 100%;
+      height: calc(100vh - var(--nav-height));
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transform: translateX(-100%);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 999;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open {
+      transform: translateX(0);
+    }
+
+    .mobile-drawer .nav-link {
+      font-size: 1.25rem;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+
+    /* ==========================================================================
+       12. CREATIVE FOOTER WITH ORGANIC WAVE SEPARATOR (FROM TEST9.HTML)
+       ========================================================================== */
+    .site-footer {
+      position: relative;
+      background: var(--bg-surface-light);
+      padding-top: 100px;
+      padding-bottom: 40px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .footer-wave-top {
+      position: absolute;
+      top: -1px;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      transform: rotate(180deg);
+    }
+
+    .footer-wave-top svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 60px;
+    }
+
+    .footer-wave-top .shape-fill {
+      fill: #ffffff;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.3fr;
+      gap: 50px;
+      margin-bottom: 60px;
+    }
+
+    .footer-brand-col p {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin: 18px 0 24px;
+      max-width: 340px;
+    }
+
+    .footer-col-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .footer-links-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-menu a {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.25s ease, transform 0.25s ease;
+    }
+
+    .footer-links-menu a:hover {
+      color: var(--brand-blue);
+      transform: translateX(4px);
+    }
+
+    .contact-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .contact-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .contact-info-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--brand-blue);
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .social-media-pills {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .social-pill {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .social-pill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-blue-cyan);
+      transition: left 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 1;
+    }
+
+    .social-pill svg {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      z-index: 2;
+      transition: color 0.3s ease, fill 0.3s ease;
+    }
+
+    .social-pill:hover {
+      color: #ffffff;
+      border-color: transparent;
+      transform: translateY(-3px);
+    }
+
+    .social-pill:hover::before {
+      left: 0;
+    }
+
+    .social-pill:hover svg {
+      color: #ffffff;
+      fill: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      padding-top: 30px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-bottom-links a:hover {
+      color: var(--brand-blue);
+    }
+
+    /* Ambient Cursor Spotlight (from test9.html) */
+    .cursor-spotlight-orb {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(0, 86, 214, 0.12) 0%, rgba(255, 106, 0, 0.05) 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Floating Back to Top Button */
+    .back-to-top-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--gradient-blue-cyan);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 86, 214, 0.35);
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .back-to-top-btn.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .back-to-top-btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(0, 86, 214, 0.5);
+    }
+
+
+    /* ==========================================================================
+       13. MODAL (INSTANT QUOTE / CONSULTATION POPUP)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 26, 0.7);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 580px;
+      padding: 40px;
+      box-shadow: var(--shadow-3d);
+      position: relative;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .modal-backdrop.open .modal-dialog {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-surface-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dark);
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--brand-red);
+      color: #ffffff;
+    }
+
+    .modal-header {
+      margin-bottom: 25px;
+    }
+
+    .modal-header h3 {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .modal-header p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      background: var(--bg-surface-light);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(0, 86, 214, 0.15);
+      background: #ffffff;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-submit-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-full);
+      background: var(--gradient-logo-ribbon);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0, 86, 214, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .form-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 86, 214, 0.45);
+    }
+
+
+/* Additional Responsive Tweaks for Navigation & Footer */
+@media (max-width: 992px) {
+  .site-nav .nav-menu {
+    display: none !important;
+  }
+  .desktop-btn {
+    display: none !important;
+  }
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 36px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+  }
+  .footer-bottom-bar {
+    flex-direction: column !important;
+    gap: 16px !important;
+    text-align: center !important;
+  }
+  .footer-bottom-links {
+    justify-content: center !important;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="readingProgressBar"></div>
+
+  <!-- Toast Notification -->
+  <div class="copy-toast" id="copyToast">Link copied to clipboard!</div>
+
+  <!-- ==========================================================================
+       1. NAVIGATION BAR (STICKY & GLASSMORPHIC)
+       ========================================================================== -->
+    <!-- ==========================================================================
+       1. NAVIGATION BAR (STICKY & GLASSMORPHIC)
+       ========================================================================== -->
+  <nav class="site-nav" id="siteNav">
+    <div class="container nav-container">
+      <!-- ClickCodex Logo with local logo.png -->
+      <a href="index.html" class="brand-logo-wrap" aria-label="ClickCodex Home">
+        <img src="logo.png" alt="ClickCodex Logo" class="brand-logo-img" />
+        <div class="brand-name-group">
+          <span class="brand-title">Click<span>codex</span></span>
+          <span class="brand-subtext">Ideas To Solutions</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link ">Home</a></li>
+        <li><a href="aboutus.html" class="nav-link ">About</a></li>
+        <li><a href="services.html" class="nav-link ">Services</a></li>
+        <li><a href="service-finder.html" class="nav-link ">Advisor</a></li>
+        <li><a href="portfolio.html" class="nav-link ">Portfolio</a></li>
+        <li><a href="pricing.html" class="nav-link ">Pricing</a></li>
+        <li><a href="blogs.html" class="nav-link active">Blogs</a></li>
+        <li><a href="contactus.html" class="nav-link ">Contact</a></li>
+      </ul>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <!-- WhatsApp Quick Chat -->
+        <a href="https://wa.me/919876543210?text=Hi%20ClickCodex,%20I%20would%20like%20to%20inquire%20about%20a%20project" 
+           target="_blank" rel="noopener noreferrer" class="whatsapp-btn" title="Quick Chat on WhatsApp">
+          <svg viewBox="0 0 24 24">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.077-1.118-.057-.26-.084-.589-.201-.989-.374-1.745-.758-2.887-2.531-2.975-2.648-.088-.116-.71-0.947-.71-1.807 0-.859.45-1.282.61-1.458.16-.176.35-.22.47-.22.12 0 .24.002.34.007.11.005.26-.042.41.319.15.362.51 1.242.55 1.33.04.088.07.191.01.308-.06.117-.09.19-.18.293-.09.103-.19.23-.27.309-.09.088-.19.183-.08.371.11.188.48.793 1.03 1.283.71.633 1.31.829 1.49.919.18.09.29.076.4-.047.11-.123.47-.549.6-.738.13-.189.26-.158.44-.092.18.066 1.14.537 1.34.636.2.099.33.147.38.232.05.085.05.495-.09.9z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </a>
+
+        <!-- Talk to Us CTA -->
+        <button class="btn-primary desktop-btn" onclick="openConsultationModal()">Talk To Us</button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <a href="index.html" class="nav-link " onclick="closeMobileDrawer()">Home</a>
+    <a href="aboutus.html" class="nav-link " onclick="closeMobileDrawer()">About ClickCodex</a>
+    <a href="services.html" class="nav-link " onclick="closeMobileDrawer()">Our Services</a>
+    <a href="service-finder.html" class="nav-link " onclick="closeMobileDrawer()">Solution Advisor</a>
+    <a href="portfolio.html" class="nav-link " onclick="closeMobileDrawer()">Portfolio & Results</a>
+    <a href="pricing.html" class="nav-link " onclick="closeMobileDrawer()">Pricing & Models</a>
+    <a href="blogs.html" class="nav-link active" onclick="closeMobileDrawer()">Blogs & Insights</a>
+    <a href="contactus.html" class="nav-link " onclick="closeMobileDrawer()">Contact & Inquiries</a>
+    <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="closeMobileDrawer(); openConsultationModal();">Book Free Consultation</button>
+  </div>
+
+  <main>
+    <!-- ==========================================================================
+         ARTICLE HERO HEADER (LIGHT THEME)
+         ========================================================================== -->
+    <header class="article-hero">
+      <div class="container">
+        <!-- Breadcrumbs -->
+        <nav class="article-breadcrumbs" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span class="sep">/</span>
+          <a href="blogs.html">Blogs & Insights</a>
+          <span class="sep">/</span>
+          <span class="current">Building Sub-10ms Global APIs</span>
+        </nav>
+
+        <div class="article-meta-tags">
+          <span class="article-category-badge">Architecture & Scale</span>
+          <span class="article-time-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            12 min read • Published Sept 18, 2026 • Updated 2 days ago
+          </span>
+        </div>
+
+        <h1>Building Sub-10ms Global APIs with Edge Computing and Rust Microservices</h1>
+
+        <p class="article-lead">
+          A comprehensive architectural teardown of how the ClickCodex engineering team restructured high-throughput financial platforms to handle 240,000 requests/sec with 99.999% uptime and sub-10 millisecond global latency.
+        </p>
+
+        <div class="author-share-bar">
+          <div class="author-card-snippet">
+            <div class="author-avatar-img">VR</div>
+            <div class="author-details-text">
+              <strong>Vikramaditya Roy</strong>
+              <span>Chief Systems Architect • ClickCodex Technologies</span>
+            </div>
+          </div>
+
+          <div class="share-buttons-group">
+            <button class="share-btn" onclick="copyArticleUrl()" aria-label="Copy Article Link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              <span>Copy Link</span>
+            </button>
+            <a href="https://twitter.com/intent/tweet?text=Building%20Sub-10ms%20Global%20APIs%20with%20Edge%20Computing%20by%20@ClickCodex&url=https://clickcodex.com/blog-detail.html" target="_blank" rel="noopener noreferrer" class="share-btn" aria-label="Share on Twitter / X">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span>Post</span>
+            </a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://clickcodex.com/blog-detail.html" target="_blank" rel="noopener noreferrer" class="share-btn" aria-label="Share on LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+              <span>Share</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================================================
+         ARTICLE MAIN CONTENT & SIDEBAR (LIGHT THEME)
+         ========================================================================== -->
+    <div class="article-main-wrap">
+      <div class="container">
+        <div class="article-layout-grid">
+          
+          <!-- Sticky Sidebar -->
+          <aside class="article-sidebar">
+            <div class="toc-card">
+              <h3>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                Table of Contents
+              </h3>
+              <ul class="toc-nav-list" id="tocNav">
+                <li><a href="#section-1" class="toc-link active">1. The Latency Bottleneck</a></li>
+                <li><a href="#section-2" class="toc-link">2. Edge vs Centralized Cloud</a></li>
+                <li><a href="#section-3" class="toc-link">3. The Rust Micro-Proxy</a></li>
+                <li><a href="#section-4" class="toc-link">4. Zero-Lock State Sync</a></li>
+                <li><a href="#section-5" class="toc-link">5. Production Benchmarks</a></li>
+                <li><a href="#section-6" class="toc-link">6. Architectural Checklist</a></li>
+              </ul>
+            </div>
+
+            <!-- Consultation Callout -->
+            <div class="sidebar-cta-card">
+              <h4>Need High-Scale Architecture?</h4>
+              <p>Schedule a 30-minute technical whiteboarding session with our lead architects to optimize your platform latency.</p>
+              <button class="sidebar-cta-btn" onclick="openConsultationModal('High-Scale Architecture')">Book Technical Session</button>
+            </div>
+          </aside>
+
+          <!-- Article Content Body -->
+          <article class="article-body-content">
+            
+            <!-- Key Metrics Bar -->
+            <div class="metrics-bar">
+              <div class="metric-col">
+                <div class="metric-number">8.4ms</div>
+                <div class="metric-label">P99 Global Latency</div>
+              </div>
+              <div class="metric-col">
+                <div class="metric-number">240k</div>
+                <div class="metric-label">Req / Sec Capacity</div>
+              </div>
+              <div class="metric-col">
+                <div class="metric-number">68%</div>
+                <div class="metric-label">Cloud Spend Cut</div>
+              </div>
+              <div class="metric-col">
+                <div class="metric-number">99.999%</div>
+                <div class="metric-label">Production SLA</div>
+              </div>
+            </div>
+
+            <!-- Section 1 -->
+            <h2 id="section-1">1. The Latency Bottleneck at Modern Scale</h2>
+            <p>
+              When dealing with distributed financial transactions, e-commerce checkouts, or real-time collaborative workspaces, physical distance is an immutable law of physics. Light in vacuum travels at approximately 300,000 kilometers per second; in glass fiber, that speed drops to roughly 200,000 km/s. A packet traversing from Singapore to a centralized AWS <code>us-east-1</code> data center in Northern Virginia incurs a theoretical minimum physical round-trip time of ~140ms before a single byte of application logic executes.
+            </p>
+            <p>
+              In high-stakes enterprise applications, this 140ms baseline translates to cart abandonment, lost algorithmic trades, and sluggish user feedback. During our engagement with a multi-jurisdiction financial exchange, our objective was uncompromising: <strong>guarantee P99 write latency under 10ms for 95% of the globe's internet-connected population.</strong>
+            </p>
+
+            <div class="callout-box warning">
+              <div class="callout-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                The Traditional "Read-Replica" Fallacy
+              </div>
+              <p class="callout-desc">
+                Deploying cross-region read-replicas only solves read paths. Write operations still pay the cross-ocean round-trip penalty, and eventual consistency lag causes dirty reads and race conditions when users execute immediate follow-up mutations.
+              </p>
+            </div>
+
+            <!-- Section 2 -->
+            <h2 id="section-2">2. Centralized Cloud vs Distributed Edge Micro-Gateways</h2>
+            <p>
+              Traditional API architectures route traffic through an edge CDN solely for static asset delivery, terminating TLS and forwarding API payloads upstream to a centralized cluster of containers. 
+            </p>
+            <p>
+              To shatter the latency floor, we decoupled business logic into two distinct tiers:
+            </p>
+            <ul>
+              <li><strong>Edge Compute Workers:</strong> Running within 280+ Points of Presence (PoPs) globally via WebAssembly (Wasm) and Rust. These workers terminate TLS, validate cryptographically signed JWTs, execute local schema validation, and evaluate business rules locally.</li>
+              <li><strong>Distributed Ledger & CRDT Fabric:</strong> Mutations are accepted deterministically at the edge node nearest to the user, immediately acknowledged with an optimistic idempotency token, and synchronized asynchronously across continental data centers.</li>
+            </ul>
+
+            <!-- Architecture Diagram (Light Theme) -->
+            <div class="system-diagram-box">
+              <div class="diagram-title-label">ClickCodex Edge Proxy Topology Flow</div>
+              <svg class="arch-flow-svg" viewBox="0 0 700 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                <!-- User Ingress -->
+                <rect x="20" y="80" width="110" height="60" rx="10" fill="#ffffff" stroke="#0056d6" stroke-width="2"/>
+                <text x="75" y="108" fill="#0f172a" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">Global Users</text>
+                <text x="75" y="125" fill="#64748b" font-size="10" font-family="sans-serif" text-anchor="middle">Anycast DNS</text>
+
+                <line x1="130" y1="110" x2="190" y2="110" stroke="#0056d6" stroke-width="2" stroke-dasharray="4"/>
+                <polygon points="190,110 182,105 182,115" fill="#0056d6"/>
+
+                <!-- Edge Worker -->
+                <rect x="195" y="60" width="150" height="100" rx="12" fill="#ffffff" stroke="#00a2ff" stroke-width="2"/>
+                <text x="270" y="92" fill="#0056d6" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">Edge PoP (Rust/Wasm)</text>
+                <text x="270" y="112" fill="#334155" font-size="10" font-family="sans-serif" text-anchor="middle">Local Validation</text>
+                <text x="270" y="128" fill="#059669" font-size="10" font-family="sans-serif" text-anchor="middle" font-weight="bold">Local Ack: 6.2ms</text>
+
+                <line x1="345" y1="110" x2="415" y2="110" stroke="#ff6a00" stroke-width="2"/>
+                <polygon points="415,110 407,105 407,115" fill="#ff6a00"/>
+
+                <!-- CRDT Engine -->
+                <rect x="420" y="60" width="140" height="100" rx="12" fill="#ffffff" stroke="#ff6a00" stroke-width="2"/>
+                <text x="490" y="92" fill="#c2410c" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">CRDT Fabric</text>
+                <text x="490" y="112" fill="#334155" font-size="10" font-family="sans-serif" text-anchor="middle">Zero Locks</text>
+                <text x="490" y="128" fill="#64748b" font-size="10" font-family="sans-serif" text-anchor="middle">P2P Vector Clocks</text>
+
+                <line x1="560" y1="110" x2="615" y2="110" stroke="#e61e2b" stroke-width="2"/>
+                <polygon points="615,110 607,105 607,115" fill="#e61e2b"/>
+
+                <!-- Persistent Storage -->
+                <rect x="620" y="80" width="60" height="60" rx="8" fill="#ffffff" stroke="#e61e2b" stroke-width="2"/>
+                <text x="650" y="115" fill="#c7121e" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Raft DB</text>
+              </svg>
+            </div>
+
+            <!-- Section 3 -->
+            <h2 id="section-3">3. The ClickCodex Rust Micro-Proxy Architecture</h2>
+            <p>
+              Node.js and Python runtimes impose non-trivial V8 garbage collection pauses and substantial cold-start overheads (150ms–800ms) when spinning up isolated edge instances. By compiling our edge proxies directly from <strong>Rust into WebAssembly (Wasm) bytecode</strong>, cold start times plummeted to under <strong>0.8 milliseconds</strong>.
+            </p>
+            <p>
+              Below is an annotated snippet of the production edge handler responsible for handling cryptographic validation and local cache reconciliation:
+            </p>
+
+            <!-- Code Snippet -->
+            <div class="code-container">
+              <div class="code-header-bar">
+                <span>src/edge_worker/handler.rs</span>
+                <button class="copy-code-btn" onclick="copyCodeSnippet(this)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy Code</span>
+                </button>
+              </div>
+              <pre class="code-content"><code><span class="keyword">use</span> <span class="type">fastly</span>::{<span class="type">Error</span>, <span class="type">Request</span>, <span class="type">Response</span>};
+<span class="keyword">use</span> <span class="type">clickcodex_crypto</span>::{<span class="fn">verify_client_token</span>, <span class="type">Claims</span>};
+
+<span class="comment">/// ClickCodex Sub-10ms Edge Ingress Gateway</span>
+#[fastly::main]
+<span class="keyword">fn</span> <span class="fn">main</span>(<span class="keyword">mut</span> req: <span class="type">Request</span>) -&gt; <span class="type">Result</span>&lt;<span class="type">Response</span>, <span class="type">Error</span>&gt; {
+    <span class="comment">// 1. Zero-copy header inspection</span>
+    <span class="keyword">let</span> auth_header = req.get_header_str(<span class="string">"Authorization"</span>)
+        .ok_or_else(|| Error::msg(<span class="string">"Missing authorization token"</span>))?;
+
+    <span class="comment">// 2. High-speed ED25519 signature check on Edge node</span>
+    <span class="keyword">let</span> claims = <span class="fn">verify_client_token</span>(auth_header)?;
+
+    <span class="comment">// 3. Query local Edge L1 Cache (Shared Memory)</span>
+    <span class="keyword">let</span> cache_key = <span class="fn">format!</span>(<span class="string">"v1:state:{}"</span>, claims.tenant_id);
+    <span class="keyword">if</span> <span class="keyword">let</span> <span class="type">Some</span>(cached_payload) = fastly::cache::lookup(&amp;cache_key)? {
+        <span class="keyword">return</span> <span class="type">Ok</span>(Response::from_body(cached_payload)
+            .with_header(<span class="string">"X-Edge-Node"</span>, fastly::geo::continent()?)
+            .with_header(<span class="string">"X-Cache-Status"</span>, <span class="string">"HIT-EDGE-L1"</span>));
+    }
+
+    <span class="comment">// 4. Fallback to CRDT synchronization pipeline</span>
+    <span class="keyword">let</span> backend_resp = req.send(<span class="string">"regional_crdt_cluster"</span>)?;
+    <span class="type">Ok</span>(backend_resp)
+}</code></pre>
+            </div>
+
+            <!-- Section 4 -->
+            <h2 id="section-4">4. Zero-Lock State Synchronization with CRDTs</h2>
+            <p>
+              Traditional relational databases rely on two-phase commits (2PC) or Raft consensus for distributed writes. While strong consistency is indispensable for ledger balances, it enforces a hard locking barrier that fundamentally throttles throughput.
+            </p>
+            <p>
+              We implemented <strong>Conflict-Free Replicated Data Types (CRDTs)</strong> utilizing state-based vector clocks. Under this paradigm:
+            </p>
+            <ol>
+              <li>Mutations are commutative: operations arrive in any order across nodes without divergence.</li>
+              <li>No global database locks: edge nodes write to local journals without waiting for remote nodes.</li>
+              <li>Deterministic merge: mathematical resolution functions guarantee identical state across all continents in less than 40ms.</li>
+            </ol>
+
+            <div class="callout-box tip">
+              <div class="callout-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Key Architectural Takeaway
+              </div>
+              <p class="callout-desc">
+                By decoupling the <em>immediate client confirmation</em> from the <em>global persistence commit</em>, we eliminated the perception of latency for 100% of end-user interactions.
+              </p>
+            </div>
+
+            <!-- Section 5 -->
+            <h2 id="section-5">5. Production Benchmarks & Chaos Testing</h2>
+            <p>
+              To validate reliability under catastrophic conditions, we subjected the architecture to synthetic traffic spikes and simulated regional fiber cuts across Tokyo and Frankfurt during market open hours.
+            </p>
+
+            <div class="benchmark-table-wrap">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>Architecture Profile</th>
+                    <th>P50 Latency</th>
+                    <th>P99 Latency</th>
+                    <th>Throughput</th>
+                    <th>Infrastructure Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Centralized Node.js (AWS us-east-1)</td>
+                    <td>142ms</td>
+                    <td>385ms</td>
+                    <td>18,000 req/s</td>
+                    <td>$24,500 / mo</td>
+                  </tr>
+                  <tr>
+                    <td>Multi-Region Go Microservices</td>
+                    <td>48ms</td>
+                    <td>125ms</td>
+                    <td>65,000 req/s</td>
+                    <td>$19,200 / mo</td>
+                  </tr>
+                  <tr>
+                    <td><strong>ClickCodex Rust + Edge CRDT</strong></td>
+                    <td class="highlight-good">3.4ms</td>
+                    <td class="highlight-good">8.4ms</td>
+                    <td class="highlight-good">240,000 req/s</td>
+                    <td class="highlight-good"><strong>$7,800 / mo</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Section 6 -->
+            <h2 id="section-6">6. Architectural Checklist for Engineering Teams</h2>
+            <p>
+              If your engineering team is evaluating an edge migration, we recommend following this 5-point checklist before committing code:
+            </p>
+            <ul>
+              <li><strong>Profile payload sizes:</strong> Edge memory limits are tight (typically 128MB per worker). Keep serialization binary via Protocol Buffers or FlatBuffers.</li>
+              <li><strong>Audit state requirements:</strong> Segregate read-heavy ephemeral state (cacheable at edge) from strictly serializable transactional financial state.</li>
+              <li><strong>Validate cryptographic primitives:</strong> Utilize ED25519 or ECDSA algorithms with hardware-accelerated instructions in Wasm.</li>
+              <li><strong>Simulate split-brain scenarios:</strong> Test edge partitions proactively using automated chaos monkey scripts.</li>
+              <li><strong>Continuous telemetry:</strong> Instrument OpenTelemetry distributed tracing across all edge hops to catch microsecond regression spikes.</li>
+            </ul>
+
+            <!-- Author Full Profile Card -->
+            <div class="author-full-card">
+              <div class="author-full-avatar">VR</div>
+              <div class="author-full-content">
+                <h4>Vikramaditya Roy</h4>
+                <div class="author-role-text">VP of Systems Architecture • ClickCodex</div>
+                <p>
+                  Vikramaditya leads high-throughput distributed systems and cloud infrastructure engineering at ClickCodex. Over the past decade, he has designed mission-critical payment engines, high-frequency trading gateways, and resilient enterprise cloud software.
+                </p>
+                <div class="share-buttons-group">
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="share-btn">LinkedIn Profile</a>
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="share-btn">Follow on X</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Discussion & Comment Section -->
+            <div class="discussion-card">
+              <h3>Join the Engineering Discussion</h3>
+              <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">
+                Have questions regarding CRDT merge conflicts or edge worker memory limits? Leave a technical comment or architecture inquiry below.
+              </p>
+
+              <form class="comment-input-wrap" onsubmit="handleCommentSubmit(event)">
+                <textarea id="commentText" placeholder="Write your technical comment, benchmark inquiry, or feedback..." required></textarea>
+                <div style="display: flex; justify-content: flex-end;">
+                  <button type="submit" class="btn-primary" style="padding: 10px 24px; font-size: 0.9rem;">
+                    <span>Post Comment</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         RELATED ARTICLES SECTION (LIGHT THEME)
+         ========================================================================== -->
+    <section class="related-articles-section">
+      <div class="container">
+        <h2>Recommended Technical Reads</h2>
+        <div class="related-grid">
+          
+          <a href="blogs.html" class="related-card">
+            <div>
+              <span class="category-chip" style="color: #7c3aed; border-color: rgba(124, 58, 237, 0.25); background: rgba(124, 58, 237, 0.08);">AI & ML</span>
+              <h3>Fine-Tuning Local LLMs for Enterprise Domain Reasoning Without Cloud GPU Bills</h3>
+            </div>
+            <span class="read-link">Read Deep Dive →</span>
+          </a>
+
+          <a href="blogs.html" class="related-card">
+            <div>
+              <span class="category-chip" style="color: #059669; border-color: rgba(5, 150, 105, 0.25); background: rgba(5, 150, 105, 0.08);">Frontend & Web3</span>
+              <h3>Zero-Runtime CSS in 2026: Why We Switched from Heavy Frameworks to Native Tokens</h3>
+            </div>
+            <span class="read-link">Read Deep Dive →</span>
+          </a>
+
+          <a href="blogs.html" class="related-card">
+            <div>
+              <span class="category-chip" style="color: #c2410c; border-color: rgba(194, 65, 12, 0.25); background: rgba(194, 65, 12, 0.08);">Cloud & DevOps</span>
+              <h3>Multi-Region Active-Active Kubernetes on GCP with Cilium Service Mesh</h3>
+            </div>
+            <span class="read-link">Read Deep Dive →</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER (CREATIVE ORGANIC WAVE SEPARATOR & UNIFIED 4-COL GRID)
+       ========================================================================== -->
+    <!-- ==========================================================================
+       FOOTER (CREATIVE ORGANIC WAVE SEPARATOR & UNIFIED 4-COL GRID)
+       ========================================================================== -->
+  <footer class="site-footer" id="siteFooter">
+    <div class="footer-wave-top">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+      </svg>
+    </div>
+
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand-col">
+          <a href="index.html" class="brand-logo-wrap" aria-label="ClickCodex Home">
+            <img src="logo.png" alt="ClickCodex Logo" class="brand-logo-img" />
+            <div class="brand-name-group">
+              <span class="brand-title">Click<span>codex</span></span>
+              <span class="brand-subtext">Ideas To Solutions</span>
+            </div>
+          </a>
+          <p>
+            ClickCodex is a premier full-cycle digital agency building scalable websites, custom web applications, mobile platforms, and result-oriented digital marketing strategies.
+          </p>
+          <div class="social-media-pills">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.645-.07-4.85s.012-3.584.07-4.85c.148-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.359 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.359-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.359-2.618-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z"/></svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="YouTube">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div>
+          <h4 class="footer-col-title">Navigation</h4>
+          <ul class="footer-links-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="aboutus.html">About ClickCodex</a></li>
+            <li><a href="services.html">Our Services</a></li>
+            <li><a href="service-finder.html">Solution Advisor</a></li>
+            <li><a href="portfolio.html">Client Case Studies</a></li>
+            <li><a href="pricing.html">Pricing & Packages</a></li>
+            <li><a href="blogs.html">Tech Blogs & Insights</a></li>
+            <li><a href="contactus.html">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Core Services -->
+        <div>
+          <h4 class="footer-col-title">Core Services</h4>
+          <ul class="footer-links-menu">
+            <li><a href="services.html">Website Development</a></li>
+            <li><a href="services.html">Mobile Applications</a></li>
+            <li><a href="services.html">Digital Marketing & SEO</a></li>
+            <li><a href="services.html">UI/UX Interface Design</a></li>
+            <li><a href="services.html">E-Commerce Platforms</a></li>
+            <li><a href="services.html">Dedicated Developers</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Info -->
+        <div>
+          <h4 class="footer-col-title">Contact & Offices</h4>
+          <div class="contact-info-list">
+            <div class="contact-info-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <div>
+                <strong>Email Inquiries</strong>
+                <p>hello@clickcodex.com</p>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              <div>
+                <strong>Direct Phone / WhatsApp</strong>
+                <p>+91 (987) 654-3210</p>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <div>
+                <strong>Headquarters</strong>
+                <p>Tech Innovation Park, Bangalore & Mumbai, India</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <p>© 2026 ClickCodex Technologies. All Rights Reserved. Built with pride in India.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms-of-service.html">Terms of Service</a>
+          <a href="service-finder.html">Solution Finder</a>
+          <a href="admin/index.html" style="color: var(--brand-blue); font-weight: 700;">Studio Admin ↗</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Back to Top Button -->
+  <button class="back-to-top-btn" id="backToTopBtn" aria-label="Back to top">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+  <!-- ==========================================================================
+       MODAL: INSTANT CONSULTATION / FREE STRATEGY CALL
+       ========================================================================== -->
+  <div class="modal-backdrop" id="consultationModal" onclick="handleBackdropClick(event)">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="closeConsultationModal()" aria-label="Close modal">✕</button>
+      <div class="modal-header">
+        <span class="preview-badge" style="color: var(--brand-blue); background: rgba(0,86,214,0.08);">Get In Touch</span>
+        <h3>Schedule a Free Strategy Call</h3>
+        <p>Tell us about your project requirements and receive a comprehensive proposal within 24 hours.</p>
+      </div>
+
+      <form id="consultationForm" onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+          <label for="userName">Your Full Name *</label>
+          <input type="text" id="userName" class="form-control" placeholder="e.g. Rahul Sharma" required />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label for="userEmail">Business Email *</label>
+            <input type="email" id="userEmail" class="form-control" placeholder="rahul@company.com" required />
+          </div>
+          <div class="form-group">
+            <label for="userPhone">Phone / WhatsApp *</label>
+            <input type="tel" id="userPhone" class="form-control" placeholder="+91 98765 43210" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="projectService">Interested Service *</label>
+          <select id="projectService" class="form-control" required>
+            <option value="Website Development">Website Creation & Web Apps</option>
+            <option value="Mobile App Development">Mobile App Development (iOS/Android)</option>
+            <option value="Digital Marketing">Digital Marketing & SEO Growth</option>
+            <option value="UI/UX Design">UI/UX & Brand Design</option>
+            <option value="E-Commerce Development">E-Commerce Development</option>
+            <option value="Dedicated Developers">Hire Dedicated Team</option>
+            <option value="Complete Overhaul">Full Digital Transformation</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="projectDetails">Project Overview / Goals</label>
+          <textarea id="projectDetails" class="form-control" placeholder="Tell us briefly about your timeline, budget expectations, or existing website/app..."></textarea>
+        </div>
+
+        <button type="submit" class="form-submit-btn" id="submitBtn">
+          <span>Submit Request & Get Quote</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Sticky Navbar & Back to Top
+      const siteNav = document.getElementById('siteNav');
+      const backToTopBtn = document.getElementById('backToTopBtn');
+
+      window.addEventListener('scroll', () => {
+        const scrollPos = window.scrollY;
+        if (siteNav) {
+          if (scrollPos > 50) {
+            siteNav.classList.add('scrolled');
+          } else {
+            siteNav.classList.remove('scrolled');
+          }
+        }
+        if (backToTopBtn) {
+          if (scrollPos > 350) {
+            backToTopBtn.classList.add('visible');
+          } else {
+            backToTopBtn.classList.remove('visible');
+          }
+        }
+      });
+
+      if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      // 2. Mobile Menu Toggle
+      const mobileToggle = document.getElementById('mobileToggle');
+      const mobileDrawer = document.getElementById('mobileDrawer');
+
+      if (mobileToggle && mobileDrawer) {
+        mobileToggle.addEventListener('click', () => {
+          mobileDrawer.classList.toggle('open');
+        });
+      }
+
+      window.closeMobileDrawer = function() {
+        if (mobileDrawer) mobileDrawer.classList.remove('open');
+      };
+    });
+
+    // 3. Consultation Modal Functions
+    window.openConsultationModal = function(serviceName = '') {
+      const modal = document.getElementById('consultationModal');
+      if (modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        if (serviceName) {
+          const select = document.getElementById('projectService');
+          if (select) {
+            for (let i = 0; i < select.options.length; i++) {
+              if (select.options[i].text.toLowerCase().includes(serviceName.toLowerCase()) || 
+                  select.options[i].value.toLowerCase().includes(serviceName.toLowerCase())) {
+                select.selectedIndex = i;
+                break;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    window.closeConsultationModal = function() {
+      const modal = document.getElementById('consultationModal');
+      if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    };
+
+    window.handleBackdropClick = function(event) {
+      if (event.target.id === 'consultationModal') {
+        closeConsultationModal();
+      }
+    };
+
+    window.handleFormSubmit = function(event) {
+      event.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      if (!submitBtn) return;
+      const originalText = submitBtn.innerHTML;
+
+      submitBtn.innerHTML = '<span>Sending Request...</span>';
+      submitBtn.disabled = true;
+
+      setTimeout(() => {
+        submitBtn.innerHTML = '<span>✓ Request Sent Successfully!</span>';
+        submitBtn.style.background = '#10b981';
+
+        setTimeout(() => {
+          alert('Thank you! Your project inquiry has been received. A ClickCodex technical director will reach out to you within 2-4 hours.');
+          closeConsultationModal();
+          const form = document.getElementById('consultationForm');
+          if (form) form.reset();
+          submitBtn.innerHTML = originalText;
+          submitBtn.style.background = '';
+          submitBtn.disabled = false;
+        }, 800);
+      }, 1000);
+    };
+  </script>
+
+  <!-- Page-Specific Table of Contents & Reading Progress JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Reading Progress Bar
+      const progressBar = document.getElementById('readingProgressBar');
+      window.addEventListener('scroll', () => {
+        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (window.scrollY / totalHeight) * 100;
+        if (progressBar) progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+
+        // 2. Scrollspy for Table of Contents
+        const headings = document.querySelectorAll('.article-body-content h2[id]');
+        const tocLinks = document.querySelectorAll('.toc-link');
+
+        let currentActive = '';
+        headings.forEach(heading => {
+          const rect = heading.getBoundingClientRect();
+          if (rect.top <= 140) {
+            currentActive = heading.getAttribute('id');
+          }
+        });
+
+        if (currentActive) {
+          tocLinks.forEach(link => {
+            if (link.getAttribute('href') === '#' + currentActive) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    });
+
+    // Copy Article URL
+    window.copyArticleUrl = function() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showToast('Link copied to clipboard!');
+      }).catch(() => {
+        showToast('Article URL: ' + window.location.href);
+      });
+    };
+
+    // Copy Code Snippet
+    window.copyCodeSnippet = function(btn) {
+      const codeBlock = btn.closest('.code-container').querySelector('code');
+      if (codeBlock) {
+        navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<span>✓ Copied!</span>';
+          setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        });
+      }
+    };
+
+    // Toast helper
+    function showToast(msg) {
+      const toast = document.getElementById('copyToast');
+      if (toast) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
+      }
+    }
+
+    // Comment submission
+    window.handleCommentSubmit = function(e) {
+      e.preventDefault();
+      const txt = document.getElementById('commentText');
+      if (txt && txt.value.trim()) {
+        alert('Thank you for participating! Your comment has been submitted for moderation.');
+        txt.value = '';
+      }
+    };
+  </script>
+</body>
+</html>

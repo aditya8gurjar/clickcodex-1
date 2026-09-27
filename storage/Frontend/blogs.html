@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- ==========================================================================
+       ADVANCED SEO META TAGS
+       ========================================================================== -->
+  <title>Blogs & Engineering Insights | Architecture, AI & Web Dev - ClickCodex</title>
+  <meta name="description" content="Explore in-depth technical blogs, distributed systems architectures, AI engineering, frontend benchmarks, and real-world case studies from ClickCodex engineers." />
+  <meta name="keywords" content="ClickCodex blog, software architecture insights, edge computing Rust, local LLM fine tuning, Flutter 3.24 performance, zero runtime CSS, cloud DevOps Kubernetes" />
+  <meta name="author" content="ClickCodex Technologies" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://clickcodex.com/blogs.html" />
+  <meta name="theme-color" content="#0056d6" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ClickCodex Technologies" />
+  <meta property="og:url" content="https://clickcodex.com/blogs.html" />
+  <meta property="og:title" content="Blogs & Engineering Insights | ClickCodex - Ideas To Solutions" />
+  <meta property="og:description" content="Deep architectural breakdowns, benchmarks, AI systems engineering, and design system philosophy from the ClickCodex engineering team." />
+  <meta property="og:image" content="https://clickcodex.com/logo.png" />
+  <meta property="og:image:alt" content="ClickCodex Engineering Insights & Technical Blogs" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@ClickCodex" />
+  <meta name="twitter:creator" content="@ClickCodex" />
+  <meta name="twitter:title" content="Blogs & Engineering Insights | ClickCodex" />
+  <meta name="twitter:description" content="Explore cutting-edge patterns in scalable web platforms, distributed systems, AI integrations, and cloud infrastructure." />
+  <meta name="twitter:image" content="https://clickcodex.com/logo.png" />
+
+  <!-- Google Fonts: Poppins & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://clickcodex.com/#organization",
+        "name": "ClickCodex Technologies",
+        "url": "https://clickcodex.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://clickcodex.com/logo.png"
+        },
+        "sameAs": [
+          "https://linkedin.com",
+          "https://twitter.com",
+          "https://instagram.com",
+          "https://youtube.com"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://clickcodex.com/#website",
+        "url": "https://clickcodex.com",
+        "name": "ClickCodex",
+        "publisher": {
+          "@id": "https://clickcodex.com/#organization"
+        }
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": "https://clickcodex.com/blogs.html#webpage",
+        "url": "https://clickcodex.com/blogs.html",
+        "name": "Blogs & Engineering Insights - ClickCodex",
+        "isPartOf": {
+          "@id": "https://clickcodex.com/#website"
+        },
+        "description": "Explore in-depth technical blogs, distributed systems architectures, and AI engineering case studies from ClickCodex."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://clickcodex.com/index.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blogs & Insights",
+            "item": "https://clickcodex.com/blogs.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* ==========================================================================
+       RESET & BASE STYLES (LIGHT COLOR THEME)
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: #ffffff;
+      color: #0f172a;
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Common Button Styles */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 9999px;
+      background: var(--gradient-logo-ribbon);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 25px -5px rgba(0, 86, 214, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px -5px rgba(230, 30, 43, 0.4);
+    }
+
+    /* ==========================================================================
+       BLOGS HERO SECTION (LIGHT THEME)
+       ========================================================================== */
+    .blogs-hero {
+      position: relative;
+      padding-top: calc(var(--nav-height) + 60px);
+      padding-bottom: 70px;
+      background: radial-gradient(circle at 50% 10%, rgba(0, 86, 214, 0.05) 0%, #ffffff 80%), #ffffff;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .hero-glow-1 {
+      position: absolute;
+      top: 5%;
+      left: 10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 162, 255, 0.08) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    .hero-glow-2 {
+      position: absolute;
+      top: 15%;
+      right: 10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 106, 0, 0.06) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    .hero-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(0, 86, 214, 0.06);
+      border: 1px solid rgba(0, 86, 214, 0.18);
+      color: var(--brand-blue);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero-badge-pill span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brand-blue);
+      box-shadow: 0 0 10px rgba(0, 86, 214, 0.5);
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .blogs-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      color: #0f172a;
+      max-width: 900px;
+      margin-bottom: 20px;
+    }
+
+    .blogs-hero h1 span.gradient-text {
+      background: var(--gradient-logo-ribbon);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .blogs-hero p.hero-desc {
+      font-size: 1.18rem;
+      color: #475569;
+      max-width: 780px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    /* Search & Filter Controls */
+    .search-filter-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 980px;
+    }
+
+    .search-bar-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .search-bar-wrap input {
+      width: 100%;
+      padding: 16px 20px 16px 52px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .search-bar-wrap input:focus {
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 25px rgba(0, 86, 214, 0.2);
+    }
+
+    .search-bar-wrap svg {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    /* Filter Pills */
+    .filter-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filter-pill {
+      padding: 9px 20px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .filter-pill:hover {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    .filter-pill.active {
+      background: var(--gradient-logo-ribbon);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(0, 86, 214, 0.35);
+    }
+
+    /* ==========================================================================
+       FEATURED FLAGSHIP ARTICLE (LIGHT SPOTLIGHT)
+       ========================================================================== */
+    .featured-section {
+      padding: 60px 0 30px;
+      background: #f8fafc;
+    }
+
+    .featured-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 40px;
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 24px;
+      padding: 48px;
+      overflow: hidden;
+      box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.07), 0 0 0 1px rgba(0, 86, 214, 0.05);
+      transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .featured-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 86, 214, 0.4);
+      box-shadow: 0 25px 55px -10px rgba(0, 86, 214, 0.15);
+    }
+
+    .featured-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .featured-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .featured-tag {
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: rgba(230, 30, 43, 0.08);
+      border: 1px solid rgba(230, 30, 43, 0.25);
+      color: var(--brand-red);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .featured-readtime {
+      font-size: 0.85rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .featured-card h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 2.5vw, 2.3rem);
+      font-weight: 800;
+      line-height: 1.25;
+      color: #0f172a;
+      margin-bottom: 18px;
+    }
+
+    .featured-card h2 a {
+      color: #0f172a;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .featured-card h2 a:hover {
+      color: var(--brand-blue);
+    }
+
+    .featured-excerpt {
+      font-size: 1.05rem;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .featured-meta-author {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 24px;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .author-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0056d6, #ff6a00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 86, 214, 0.25);
+    }
+
+    .author-name-group strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+
+    .author-name-group span {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .featured-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 9999px;
+      background: var(--gradient-logo-ribbon);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 18px rgba(0, 86, 214, 0.25);
+    }
+
+    .featured-action-btn:hover {
+      transform: translateX(4px);
+      box-shadow: 0 10px 25px rgba(230, 30, 43, 0.35);
+    }
+
+    /* Featured Visual Graphic / Infographic */
+    .featured-graphic {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      padding: 30px;
+      overflow: hidden;
+    }
+
+    .diagram-stack {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .diagram-block {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      transition: all 0.3s ease;
+    }
+
+    .diagram-block.highlight {
+      background: rgba(0, 86, 214, 0.06);
+      border-color: rgba(0, 86, 214, 0.3);
+    }
+
+    .diagram-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diagram-badge {
+      font-family: monospace;
+      font-size: 0.78rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(0, 86, 214, 0.08);
+      color: var(--brand-blue);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       ARTICLES GRID SECTION (LIGHT THEME)
+       ========================================================================== */
+    .articles-grid-section {
+      padding: 60px 0 90px;
+      background: #ffffff;
+    }
+
+    .section-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 36px;
+    }
+
+    .section-header-row h2 {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .article-count-badge {
+      font-size: 0.9rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 32px;
+    }
+
+    .article-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .article-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--gradient-logo-ribbon);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .article-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0, 86, 214, 0.3);
+      box-shadow: 0 20px 40px -10px rgba(0, 86, 214, 0.12);
+    }
+
+    .article-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .category-chip {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(0, 86, 214, 0.08);
+      border: 1px solid rgba(0, 86, 214, 0.2);
+      color: var(--brand-blue);
+    }
+
+    .read-time {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .article-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.28rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #0f172a;
+      margin-bottom: 14px;
+    }
+
+    .article-card h3 a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.25s ease;
+    }
+
+    .article-card h3 a:hover {
+      color: var(--brand-blue);
+    }
+
+    .article-card p.card-summary {
+      font-size: 0.94rem;
+      color: #475569;
+      line-height: 1.65;
+      margin-bottom: 24px;
+      flex-grow: 1;
+    }
+
+    .card-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 18px;
+      margin-top: auto;
+    }
+
+    .card-author-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .author-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--brand-blue);
+    }
+
+    .author-text {
+      font-size: 0.84rem;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .read-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--brand-blue);
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: gap 0.2s ease, color 0.2s ease;
+    }
+
+    .read-link:hover {
+      color: var(--brand-red);
+      gap: 9px;
+    }
+
+    /* ==========================================================================
+       NEWSLETTER & ENGINEERING DISPATCH (LIGHT THEME)
+       ========================================================================== */
+    .dispatch-newsletter {
+      background: linear-gradient(135deg, rgba(0, 86, 214, 0.04) 0%, rgba(255, 106, 0, 0.04) 100%), #f8fafc;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 28px;
+      padding: 60px 40px;
+      margin-bottom: 90px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+    }
+
+    .dispatch-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(255, 106, 0, 0.08);
+      border: 1px solid rgba(255, 106, 0, 0.25);
+      color: var(--brand-orange);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+    }
+
+    .dispatch-newsletter h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 14px;
+    }
+
+    .dispatch-newsletter p {
+      font-size: 1.05rem;
+      color: #475569;
+      max-width: 620px;
+      margin: 0 auto 32px;
+      line-height: 1.65;
+    }
+
+    .newsletter-form {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .newsletter-form input {
+      flex: 1;
+      padding: 15px 20px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .newsletter-form input:focus {
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 20px rgba(0, 86, 214, 0.18);
+    }
+
+    /* No search results state */
+    .no-results-msg {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+      font-size: 1.1rem;
+      grid-column: 1 / -1;
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 992px) {
+      .featured-card {
+        grid-template-columns: 1fr;
+        padding: 36px;
+      }
+      .featured-graphic {
+        display: none;
+      }
+      .newsletter-form {
+        flex-direction: column;
+        width: 100%;
+      }
+      .newsletter-form input,
+      .newsletter-form button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .blogs-hero {
+        padding-top: calc(var(--nav-height) + 40px);
+      }
+      .articles-grid {
+        grid-template-columns: 1fr;
+      }
+      .featured-card {
+        padding: 24px;
+      }
+    }
+
+    
+/* ==========================================================================
+   CLICKCODEX UNIFIED HEADER, FOOTER, MODAL & RESPONSIVE CSS
+   Extracted directly from index.html design system
+   ========================================================================== */
+
+/* Brand & Color Variables Fallback if not already in :root */
+:root {
+  --brand-blue: #0056d6;
+  --brand-blue-deep: #003896;
+  --brand-cyan: #00a2ff;
+  --brand-red: #e61e2b;
+  --brand-crimson: #c7121e;
+  --brand-orange: #ff6a00;
+  --brand-amber: #ffb300;
+  --brand-yellow: #ffd200;
+  --gradient-logo-ribbon: linear-gradient(135deg, #0056d6 0%, #00a2ff 28%, #ff6a00 68%, #e61e2b 100%);
+  --gradient-warm: linear-gradient(135deg, #e61e2b 0%, #ff6a00 52%, #ffb300 100%);
+  --bg-surface-light: #f8fafc;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --text-white: #ffffff;
+  --border-light: rgba(226, 232, 240, 0.8);
+  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --nav-height: 80px;
+}
+
+    /* ==========================================================================
+       3. NAVIGATION BAR (STICKY & GLASSMORPHIC)
+       ========================================================================== */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--nav-height);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .site-nav.scrolled {
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      height: 72px;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0, 86, 214, 0.2));
+      transition: transform 0.3s ease;
+    }
+
+    .brand-logo-wrap:hover .brand-logo-img {
+      transform: scale(1.05) rotate(-3deg);
+    }
+
+    .brand-name-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      color: var(--brand-blue-deep);
+    }
+
+    .brand-title span {
+      color: var(--brand-orange);
+    }
+
+    .brand-subtext {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      color: var(--brand-red);
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      position: relative;
+      padding: 6px 0;
+      transition: color 0.25s ease;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2.5px;
+      border-radius: 4px;
+      background: var(--gradient-logo-ribbon);
+      transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--brand-blue);
+    }
+
+    .nav-link:hover::after, .nav-link.active::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* WhatsApp Quick Button (Highly converts Indian & Global clients) */
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius-full);
+      background: #25d366;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .whatsapp-btn:hover {
+      background: #20ba59;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+
+    .whatsapp-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+    }
+
+    /* Primary CTA Button */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 28px;
+      border-radius: var(--radius-full);
+      background: var(--gradient-blue-cyan);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 0.94rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 86, 214, 0.3);
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2.5px);
+      box-shadow: 0 12px 30px rgba(0, 86, 214, 0.42);
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-warm {
+      background: var(--gradient-warm);
+      box-shadow: 0 8px 24px rgba(255, 106, 0, 0.32);
+    }
+
+    .btn-warm:hover {
+      box-shadow: 0 12px 30px rgba(255, 106, 0, 0.45);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 11px 26px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--brand-blue);
+      color: var(--brand-blue);
+      font-family: var(--font-display);
+      font-size: 0.94rem;
+      font-weight: 600;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline:hover {
+      background: var(--brand-blue);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 86, 214, 0.25);
+    }
+
+    /* Mobile Hamburger Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--bg-surface-light);
+      border: 1px solid var(--border-light);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-dark);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      width: 100%;
+      height: calc(100vh - var(--nav-height));
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transform: translateX(-100%);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 999;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open {
+      transform: translateX(0);
+    }
+
+    .mobile-drawer .nav-link {
+      font-size: 1.25rem;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+
+    /* ==========================================================================
+       12. CREATIVE FOOTER WITH ORGANIC WAVE SEPARATOR (FROM TEST9.HTML)
+       ========================================================================== */
+    .site-footer {
+      position: relative;
+      background: var(--bg-surface-light);
+      padding-top: 100px;
+      padding-bottom: 40px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .footer-wave-top {
+      position: absolute;
+      top: -1px;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      transform: rotate(180deg);
+    }
+
+    .footer-wave-top svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 60px;
+    }
+
+    .footer-wave-top .shape-fill {
+      fill: #ffffff;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.3fr;
+      gap: 50px;
+      margin-bottom: 60px;
+    }
+
+    .footer-brand-col p {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin: 18px 0 24px;
+      max-width: 340px;
+    }
+
+    .footer-col-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .footer-links-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-menu a {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.25s ease, transform 0.25s ease;
+    }
+
+    .footer-links-menu a:hover {
+      color: var(--brand-blue);
+      transform: translateX(4px);
+    }
+
+    .contact-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .contact-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .contact-info-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--brand-blue);
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .social-media-pills {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .social-pill {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .social-pill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-blue-cyan);
+      transition: left 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 1;
+    }
+
+    .social-pill svg {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      z-index: 2;
+      transition: color 0.3s ease, fill 0.3s ease;
+    }
+
+    .social-pill:hover {
+      color: #ffffff;
+      border-color: transparent;
+      transform: translateY(-3px);
+    }
+
+    .social-pill:hover::before {
+      left: 0;
+    }
+
+    .social-pill:hover svg {
+      color: #ffffff;
+      fill: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      padding-top: 30px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-bottom-links a:hover {
+      color: var(--brand-blue);
+    }
+
+    /* Ambient Cursor Spotlight (from test9.html) */
+    .cursor-spotlight-orb {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(0, 86, 214, 0.12) 0%, rgba(255, 106, 0, 0.05) 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Floating Back to Top Button */
+    .back-to-top-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--gradient-blue-cyan);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 86, 214, 0.35);
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .back-to-top-btn.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .back-to-top-btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(0, 86, 214, 0.5);
+    }
+
+
+    /* ==========================================================================
+       13. MODAL (INSTANT QUOTE / CONSULTATION POPUP)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 26, 0.7);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 580px;
+      padding: 40px;
+      box-shadow: var(--shadow-3d);
+      position: relative;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .modal-backdrop.open .modal-dialog {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-surface-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dark);
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--brand-red);
+      color: #ffffff;
+    }
+
+    .modal-header {
+      margin-bottom: 25px;
+    }
+
+    .modal-header h3 {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .modal-header p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      background: var(--bg-surface-light);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(0, 86, 214, 0.15);
+      background: #ffffff;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-submit-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-full);
+      background: var(--gradient-logo-ribbon);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0, 86, 214, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .form-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 86, 214, 0.45);
+    }
+
+
+/* Additional Responsive Tweaks for Navigation & Footer */
+@media (max-width: 992px) {
+  .site-nav .nav-menu {
+    display: none !important;
+  }
+  .desktop-btn {
+    display: none !important;
+  }
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 36px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+  }
+  .footer-bottom-bar {
+    flex-direction: column !important;
+    gap: 16px !important;
+    text-align: center !important;
+  }
+  .footer-bottom-links {
+    justify-content: center !important;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       1. NAVIGATION BAR (STICKY & GLASSMORPHIC)
+       ========================================================================== -->
+    <!-- ==========================================================================
+       1. NAVIGATION BAR (STICKY & GLASSMORPHIC)
+       ========================================================================== -->
+  <nav class="site-nav" id="siteNav">
+    <div class="container nav-container">
+      <!-- ClickCodex Logo with local logo.png -->
+      <a href="index.html" class="brand-logo-wrap" aria-label="ClickCodex Home">
+        <img src="logo.png" alt="ClickCodex Logo" class="brand-logo-img" />
+        <div class="brand-name-group">
+          <span class="brand-title">Click<span>codex</span></span>
+          <span class="brand-subtext">Ideas To Solutions</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link ">Home</a></li>
+        <li><a href="aboutus.html" class="nav-link ">About</a></li>
+        <li><a href="services.html" class="nav-link ">Services</a></li>
+        <li><a href="service-finder.html" class="nav-link ">Advisor</a></li>
+        <li><a href="portfolio.html" class="nav-link ">Portfolio</a></li>
+        <li><a href="pricing.html" class="nav-link ">Pricing</a></li>
+        <li><a href="blogs.html" class="nav-link active">Blogs</a></li>
+        <li><a href="contactus.html" class="nav-link ">Contact</a></li>
+      </ul>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <!-- WhatsApp Quick Chat -->
+        <a href="https://wa.me/919876543210?text=Hi%20ClickCodex,%20I%20would%20like%20to%20inquire%20about%20a%20project" 
+           target="_blank" rel="noopener noreferrer" class="whatsapp-btn" title="Quick Chat on WhatsApp">
+          <svg viewBox="0 0 24 24">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.077-1.118-.057-.26-.084-.589-.201-.989-.374-1.745-.758-2.887-2.531-2.975-2.648-.088-.116-.71-0.947-.71-1.807 0-.859.45-1.282.61-1.458.16-.176.35-.22.47-.22.12 0 .24.002.34.007.11.005.26-.042.41.319.15.362.51 1.242.55 1.33.04.088.07.191.01.308-.06.117-.09.19-.18.293-.09.103-.19.23-.27.309-.09.088-.19.183-.08.371.11.188.48.793 1.03 1.283.71.633 1.31.829 1.49.919.18.09.29.076.4-.047.11-.123.47-.549.6-.738.13-.189.26-.158.44-.092.18.066 1.14.537 1.34.636.2.099.33.147.38.232.05.085.05.495-.09.9z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </a>
+
+        <!-- Talk to Us CTA -->
+        <button class="btn-primary desktop-btn" onclick="openConsultationModal()">Talk To Us</button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <a href="index.html" class="nav-link " onclick="closeMobileDrawer()">Home</a>
+    <a href="aboutus.html" class="nav-link " onclick="closeMobileDrawer()">About ClickCodex</a>
+    <a href="services.html" class="nav-link " onclick="closeMobileDrawer()">Our Services</a>
+    <a href="service-finder.html" class="nav-link " onclick="closeMobileDrawer()">Solution Advisor</a>
+    <a href="portfolio.html" class="nav-link " onclick="closeMobileDrawer()">Portfolio & Results</a>
+    <a href="pricing.html" class="nav-link " onclick="closeMobileDrawer()">Pricing & Models</a>
+    <a href="blogs.html" class="nav-link active" onclick="closeMobileDrawer()">Blogs & Insights</a>
+    <a href="contactus.html" class="nav-link " onclick="closeMobileDrawer()">Contact & Inquiries</a>
+    <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="closeMobileDrawer(); openConsultationModal();">Book Free Consultation</button>
+  </div>
+
+  <main>
+    <!-- ==========================================================================
+         BLOGS HERO SECTION (LIGHT THEME)
+         ========================================================================== -->
+    <section class="blogs-hero">
+      <div class="hero-glow-1"></div>
+      <div class="hero-glow-2"></div>
+      
+      <div class="container">
+        <div class="hero-badge-pill">
+          <span class="dot"></span>
+          <span>ClickCodex Tech Dispatch</span>
+        </div>
+
+        <h1>
+          Engineering Systems at the <span class="gradient-text">Frontier of Scale</span>
+        </h1>
+
+        <p class="hero-desc">
+          Architectural teardowns, real-world benchmarks, distributed systems patterns, AI engineering, and zero-runtime UI design from the ClickCodex engineering team.
+        </p>
+
+        <!-- Search & Filter Bar -->
+        <div class="search-filter-wrap">
+          <div class="search-bar-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="searchInput" placeholder="Search insights, technologies, or keywords..." aria-label="Search articles" />
+          </div>
+
+          <div class="filter-pills-row" id="filterPills">
+            <button class="filter-pill active" data-category="all">All Insights</button>
+            <button class="filter-pill" data-category="architecture">Architecture & Scale</button>
+            <button class="filter-pill" data-category="ai">AI & Machine Learning</button>
+            <button class="filter-pill" data-category="frontend">Frontend & UX Craft</button>
+            <button class="filter-pill" data-category="cloud">Cloud & DevOps</button>
+            <button class="filter-pill" data-category="mobile">Mobile & Flutter</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         FEATURED FLAGSHIP ARTICLE (LIGHT SPOTLIGHT)
+         ========================================================================== -->
+    <section class="featured-section">
+      <div class="container">
+        <article class="featured-card">
+          <div class="featured-content">
+            <div class="featured-badge-row">
+              <span class="featured-tag">Featured Architecture Teardown</span>
+              <span class="featured-readtime">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                12 min read • Sept 18, 2026
+              </span>
+            </div>
+
+            <h2>
+              <a href="blog-detail.html">Building Sub-10ms Global APIs with Edge Computing and Rust Microservices</a>
+            </h2>
+
+            <p class="featured-excerpt">
+              A comprehensive post-mortem and architectural breakdown of how ClickCodex re-architected high-throughput fintech APIs to achieve 99.999% uptime with sub-10 millisecond latency worldwide across 28 distributed edge regions.
+            </p>
+
+            <div class="featured-meta-author">
+              <div class="author-info">
+                <div class="author-avatar">VR</div>
+                <div class="author-name-group">
+                  <strong>Vikramaditya Roy</strong>
+                  <span>Chief Systems Architect, ClickCodex</span>
+                </div>
+              </div>
+
+              <a href="blog-detail.html" class="featured-action-btn">
+                <span>Read Full Deep Dive</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="featured-graphic" aria-hidden="true">
+            <div class="diagram-stack">
+              <div class="diagram-block">
+                <div class="diagram-label">
+                  <span>Client Ingress (Tokyo, London, NYC)</span>
+                </div>
+                <span class="diagram-badge">Anycast DNS</span>
+              </div>
+              <div class="diagram-block highlight">
+                <div class="diagram-label">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0056d6" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  <span>ClickCodex Rust Edge Proxy</span>
+                </div>
+                <span class="diagram-badge" style="background: rgba(0, 86, 214, 0.12); color: var(--brand-blue);">8.4ms P99</span>
+              </div>
+              <div class="diagram-block">
+                <div class="diagram-label">
+                  <span>Distributed CRDT State Sync</span>
+                </div>
+                <span class="diagram-badge" style="background: rgba(255, 106, 0, 0.12); color: var(--brand-orange);">Zero Locks</span>
+              </div>
+              <div class="diagram-block">
+                <div class="diagram-label">
+                  <span>Active-Active Multi-Region DB</span>
+                </div>
+                <span class="diagram-badge" style="background: rgba(16, 185, 129, 0.12); color: #059669;">99.999% SLA</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         ARTICLES GRID SECTION (LIGHT THEME)
+         ========================================================================== -->
+    <section class="articles-grid-section">
+      <div class="container">
+        <div class="section-header-row">
+          <h2>Latest Technical Articles</h2>
+          <span class="article-count-badge" id="articleCount">Showing 6 articles</span>
+        </div>
+
+        <div class="articles-grid" id="articlesGrid">
+          
+          <!-- Article 1 -->
+          <article class="article-card" data-category="architecture" data-keywords="nextjs server actions edge latency benchmark distributed micro-gateways">
+            <div>
+              <div class="card-top-row">
+                <span class="category-chip">Architecture & Scale</span>
+                <span class="read-time">9 min read • Sept 14, 2026</span>
+              </div>
+              <h3>
+                <a href="blog-detail.html">Next.js 16 Server Actions vs Distributed Edge: Production Latency Benchmarks</a>
+              </h3>
+              <p class="card-summary">
+                Synthetic and real-world latency comparisons between server-side actions, edge middleware, and distributed micro-gateways under 50,000 concurrent websocket connections.
+              </p>
+            </div>
+            <div class="card-footer-row">
+              <div class="card-author-pill">
+                <div class="author-thumb">AS</div>
+                <span class="author-text">Ananya Sharma</span>
+              </div>
+              <a href="blog-detail.html" class="read-link">Read Deep Dive →</a>
+            </div>
+          </article>
+
+          <!-- Article 2 -->
+          <article class="article-card" data-category="ai" data-keywords="local llm fine-tuning enterprise domain reasoning gpu quantization lora">
+            <div>
+              <div class="card-top-row">
+                <span class="category-chip" style="color: #7c3aed; border-color: rgba(124, 58, 237, 0.25); background: rgba(124, 58, 237, 0.08);">AI & Machine Learning</span>
+                <span class="read-time">14 min read • Sept 10, 2026</span>
+              </div>
+              <h3>
+                <a href="blog-detail.html">Fine-Tuning Local LLMs for Enterprise Domain Reasoning Without Cloud GPU Bills</a>
+              </h3>
+              <p class="card-summary">
+                Quantization techniques, LoRA adapter architectures, and localized inference servers that slashed $18,000/month in OpenAI API overhead for a legaltech client.
+              </p>
+            </div>
+            <div class="card-footer-row">
+              <div class="card-author-pill">
+                <div class="author-thumb" style="color: #7c3aed;">KR</div>
+                <span class="author-text">Karthik Raman</span>
+              </div>
+              <a href="blog-detail.html" class="read-link">Read Deep Dive →</a>
+            </div>
+          </article>
+
+          <!-- Article 3 -->
+          <article class="article-card" data-category="frontend" data-keywords="zero runtime css modern web css tokens performance hydration design system">
+            <div>
+              <div class="card-top-row">
+                <span class="category-chip" style="color: #059669; border-color: rgba(5, 150, 105, 0.25); background: rgba(5, 150, 105, 0.08);">Frontend & UX Craft</span>
+                <span class="read-time">7 min read • Sept 04, 2026</span>
+              </div>
+              <h3>
+                <a href="blog-detail.html">Zero-Runtime CSS in 2026: Why We Switched from Frameworks to Native Tokens</a>
+              </h3>
+              <p class="card-summary">
+                Eliminating bundle bloat, reducing hydration penalties, and building ultra-resilient fluid design systems using native modern CSS features and container queries.
+              </p>
+            </div>
+            <div class="card-footer-row">
+              <div class="card-author-pill">
+                <div class="author-thumb" style="color: #059669;">SP</div>
+                <span class="author-text">Sneha Patel</span>
+              </div>
+              <a href="blog-detail.html" class="read-link">Read Deep Dive →</a>
+            </div>
+          </article>
+
+          <!-- Article 4 -->
+          <article class="article-card" data-category="cloud" data-keywords="multi-region active-active kubernetes gcp cilium service mesh failover disaster recovery">
+            <div>
+              <div class="card-top-row">
+                <span class="category-chip" style="color: #c2410c; border-color: rgba(194, 65, 12, 0.25); background: rgba(194, 65, 12, 0.08);">Cloud & DevOps</span>
+                <span class="read-time">11 min read • Aug 28, 2026</span>
+              </div>
+              <h3>
+                <a href="blog-detail.html">Multi-Region Active-Active Kubernetes on GCP with Cilium Service Mesh</a>
+              </h3>
+              <p class="card-summary">
+                Zero-downtime cross-continental database replication, BGP routing tricks, and automated disaster failover without data divergence during regional cloud outages.
+              </p>
+            </div>
+            <div class="card-footer-row">
+              <div class="card-author-pill">
+                <div class="author-thumb" style="color: #c2410c;">RM</div>
+                <span class="author-text">Rohit Mehta</span>
+              </div>
+              <a href="blog-detail.html" class="read-link">Read Deep Dive →</a>
+            </div>
+          </article>
+
+          <!-- Article 5 -->
+          <article class="article-card" data-category="mobile" data-keywords="flutter 3.24 native swift kotlin 120fps impeller benchmark fintech banking">
+            <div>
+              <div class="card-top-row">
+                <span class="category-chip" style="color: #be185d; border-color: rgba(190, 24, 93, 0.25); background: rgba(190, 24, 93, 0.08);">Mobile & Flutter</span>
+                <span class="read-time">8 min read • Aug 20, 2026</span>
+              </div>
+              <h3>
+                <a href="blog-detail.html">Flutter 3.24 vs Native Swift/Kotlin: High-Fidelity 120 FPS Mobile Audit</a>
+              </h3>
+              <p class="card-summary">
+                Profiling the Impeller rendering engine, memory footprints, battery drain, and native platform channels across 500,000 active mobile banking installations.
+              </p>
+            </div>
+            <div class="card-footer-row">
+              <div class="card-author-pill">
+                <div class="author-thumb" style="color: #be185d;">DV</div>
+                <span class="author-text">Devashish Verma</span>
+              </div>
+              <a href="blog-detail.html" class="read-link">Read Deep Dive →</a>
+            </div>
+          </article>
+
+          <!-- Article 6 -->
+          <article class="article-card" data-category="frontend" data-keywords="webgl shaders threejs 60fps responsive gpu memory optimization 3d">
+            <div>
+              <div class="card-top-row">
+                <span class="category-chip" style="color: #059669; border-color: rgba(5, 150, 105, 0.25); background: rgba(5, 150, 105, 0.08);">Frontend & UX Craft</span>
+                <span class="read-time">10 min read • Aug 15, 2026</span>
+              </div>
+              <h3>
+                <a href="blog-detail.html">Deterministic 3D WebGL Shaders: Building Responsive 60FPS Web Experiences</a>
+              </h3>
+              <p class="card-summary">
+                Keeping GPU utilization under 5% while rendering rich interactive particle nodes and glassmorphic 3D scenes on low-power mobile devices and desktop browsers.
+              </p>
+            </div>
+            <div class="card-footer-row">
+              <div class="card-author-pill">
+                <div class="author-thumb" style="color: #059669;">AG</div>
+                <span class="author-text">Aditi Ghosh</span>
+              </div>
+              <a href="blog-detail.html" class="read-link">Read Deep Dive →</a>
+            </div>
+          </article>
+
+          <!-- No results placeholder -->
+          <div class="no-results-msg" id="noResultsMsg">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 16px; display: block; opacity: 0.5;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <p>No technical articles matched your search query. Try another keyword or reset the category filter.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         ENGINEERING DISPATCH NEWSLETTER (LIGHT THEME)
+         ========================================================================== -->
+    <section class="container">
+      <div class="dispatch-newsletter">
+        <span class="dispatch-badge">ClickCodex Architecture Dispatch</span>
+        <h2>Zero-Fluff Engineering Insights Delivered Monthly</h2>
+        <p>
+          Join 14,000+ senior engineers, tech leads, and founders who receive our curated architectural teardowns, production benchmarks, and software design principles.
+        </p>
+
+        <form class="newsletter-form" onsubmit="handleNewsletterSubmit(event)">
+          <input type="email" id="newsletterEmail" placeholder="Enter your business email address..." required aria-label="Business Email" />
+          <button type="submit" class="btn-primary" style="white-space: nowrap;">
+            <span>Subscribe Free</span>
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER (CREATIVE ORGANIC WAVE SEPARATOR & UNIFIED 4-COL GRID)
+       ========================================================================== -->
+    <!-- ==========================================================================
+       FOOTER (CREATIVE ORGANIC WAVE SEPARATOR & UNIFIED 4-COL GRID)
+       ========================================================================== -->
+  <footer class="site-footer" id="siteFooter">
+    <div class="footer-wave-top">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+      </svg>
+    </div>
+
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand-col">
+          <a href="index.html" class="brand-logo-wrap" aria-label="ClickCodex Home">
+            <img src="logo.png" alt="ClickCodex Logo" class="brand-logo-img" />
+            <div class="brand-name-group">
+              <span class="brand-title">Click<span>codex</span></span>
+              <span class="brand-subtext">Ideas To Solutions</span>
+            </div>
+          </a>
+          <p>
+            ClickCodex is a premier full-cycle digital agency building scalable websites, custom web applications, mobile platforms, and result-oriented digital marketing strategies.
+          </p>
+          <div class="social-media-pills">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.645-.07-4.85s.012-3.584.07-4.85c.148-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.359 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.359-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.359-2.618-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z"/></svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="YouTube">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div>
+          <h4 class="footer-col-title">Navigation</h4>
+          <ul class="footer-links-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="aboutus.html">About ClickCodex</a></li>
+            <li><a href="services.html">Our Services</a></li>
+            <li><a href="service-finder.html">Solution Advisor</a></li>
+            <li><a href="portfolio.html">Client Case Studies</a></li>
+            <li><a href="pricing.html">Pricing & Packages</a></li>
+            <li><a href="blogs.html">Tech Blogs & Insights</a></li>
+            <li><a href="contactus.html">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Core Services -->
+        <div>
+          <h4 class="footer-col-title">Core Services</h4>
+          <ul class="footer-links-menu">
+            <li><a href="services.html">Website Development</a></li>
+            <li><a href="services.html">Mobile Applications</a></li>
+            <li><a href="services.html">Digital Marketing & SEO</a></li>
+            <li><a href="services.html">UI/UX Interface Design</a></li>
+            <li><a href="services.html">E-Commerce Platforms</a></li>
+            <li><a href="services.html">Dedicated Developers</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Info -->
+        <div>
+          <h4 class="footer-col-title">Contact & Offices</h4>
+          <div class="contact-info-list">
+            <div class="contact-info-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <div>
+                <strong>Email Inquiries</strong>
+                <p>hello@clickcodex.com</p>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              <div>
+                <strong>Direct Phone / WhatsApp</strong>
+                <p>+91 (987) 654-3210</p>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <div>
+                <strong>Headquarters</strong>
+                <p>Tech Innovation Park, Bangalore & Mumbai, India</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <p>© 2026 ClickCodex Technologies. All Rights Reserved. Built with pride in India.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms-of-service.html">Terms of Service</a>
+          <a href="service-finder.html">Solution Finder</a>
+          <a href="admin/index.html" style="color: var(--brand-blue); font-weight: 700;">Studio Admin ↗</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Back to Top Button -->
+  <button class="back-to-top-btn" id="backToTopBtn" aria-label="Back to top">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+  <!-- ==========================================================================
+       MODAL: INSTANT CONSULTATION / FREE STRATEGY CALL
+       ========================================================================== -->
+  <div class="modal-backdrop" id="consultationModal" onclick="handleBackdropClick(event)">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="closeConsultationModal()" aria-label="Close modal">✕</button>
+      <div class="modal-header">
+        <span class="preview-badge" style="color: var(--brand-blue); background: rgba(0,86,214,0.08);">Get In Touch</span>
+        <h3>Schedule a Free Strategy Call</h3>
+        <p>Tell us about your project requirements and receive a comprehensive proposal within 24 hours.</p>
+      </div>
+
+      <form id="consultationForm" onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+          <label for="userName">Your Full Name *</label>
+          <input type="text" id="userName" class="form-control" placeholder="e.g. Rahul Sharma" required />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label for="userEmail">Business Email *</label>
+            <input type="email" id="userEmail" class="form-control" placeholder="rahul@company.com" required />
+          </div>
+          <div class="form-group">
+            <label for="userPhone">Phone / WhatsApp *</label>
+            <input type="tel" id="userPhone" class="form-control" placeholder="+91 98765 43210" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="projectService">Interested Service *</label>
+          <select id="projectService" class="form-control" required>
+            <option value="Website Development">Website Creation & Web Apps</option>
+            <option value="Mobile App Development">Mobile App Development (iOS/Android)</option>
+            <option value="Digital Marketing">Digital Marketing & SEO Growth</option>
+            <option value="UI/UX Design">UI/UX & Brand Design</option>
+            <option value="E-Commerce Development">E-Commerce Development</option>
+            <option value="Dedicated Developers">Hire Dedicated Team</option>
+            <option value="Complete Overhaul">Full Digital Transformation</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="projectDetails">Project Overview / Goals</label>
+          <textarea id="projectDetails" class="form-control" placeholder="Tell us briefly about your timeline, budget expectations, or existing website/app..."></textarea>
+        </div>
+
+        <button type="submit" class="form-submit-btn" id="submitBtn">
+          <span>Submit Request & Get Quote</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Sticky Navbar & Back to Top
+      const siteNav = document.getElementById('siteNav');
+      const backToTopBtn = document.getElementById('backToTopBtn');
+
+      window.addEventListener('scroll', () => {
+        const scrollPos = window.scrollY;
+        if (siteNav) {
+          if (scrollPos > 50) {
+            siteNav.classList.add('scrolled');
+          } else {
+            siteNav.classList.remove('scrolled');
+          }
+        }
+        if (backToTopBtn) {
+          if (scrollPos > 350) {
+            backToTopBtn.classList.add('visible');
+          } else {
+            backToTopBtn.classList.remove('visible');
+          }
+        }
+      });
+
+      if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      // 2. Mobile Menu Toggle
+      const mobileToggle = document.getElementById('mobileToggle');
+      const mobileDrawer = document.getElementById('mobileDrawer');
+
+      if (mobileToggle && mobileDrawer) {
+        mobileToggle.addEventListener('click', () => {
+          mobileDrawer.classList.toggle('open');
+        });
+      }
+
+      window.closeMobileDrawer = function() {
+        if (mobileDrawer) mobileDrawer.classList.remove('open');
+      };
+    });
+
+    // 3. Consultation Modal Functions
+    window.openConsultationModal = function(serviceName = '') {
+      const modal = document.getElementById('consultationModal');
+      if (modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        if (serviceName) {
+          const select = document.getElementById('projectService');
+          if (select) {
+            for (let i = 0; i < select.options.length; i++) {
+              if (select.options[i].text.toLowerCase().includes(serviceName.toLowerCase()) || 
+                  select.options[i].value.toLowerCase().includes(serviceName.toLowerCase())) {
+                select.selectedIndex = i;
+                break;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    window.closeConsultationModal = function() {
+      const modal = document.getElementById('consultationModal');
+      if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    };
+
+    window.handleBackdropClick = function(event) {
+      if (event.target.id === 'consultationModal') {
+        closeConsultationModal();
+      }
+    };
+
+    window.handleFormSubmit = function(event) {
+      event.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      if (!submitBtn) return;
+      const originalText = submitBtn.innerHTML;
+
+      submitBtn.innerHTML = '<span>Sending Request...</span>';
+      submitBtn.disabled = true;
+
+      setTimeout(() => {
+        submitBtn.innerHTML = '<span>✓ Request Sent Successfully!</span>';
+        submitBtn.style.background = '#10b981';
+
+        setTimeout(() => {
+          alert('Thank you! Your project inquiry has been received. A ClickCodex technical director will reach out to you within 2-4 hours.');
+          closeConsultationModal();
+          const form = document.getElementById('consultationForm');
+          if (form) form.reset();
+          submitBtn.innerHTML = originalText;
+          submitBtn.style.background = '';
+          submitBtn.disabled = false;
+        }, 800);
+      }, 1000);
+    };
+  </script>
+
+  <!-- Page-Specific Search & Filter JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      const filterPills = document.querySelectorAll('.filter-pill');
+      const articles = document.querySelectorAll('.article-card');
+      const noResultsMsg = document.getElementById('noResultsMsg');
+      const articleCount = document.getElementById('articleCount');
+
+      let currentCategory = 'all';
+      let currentQuery = '';
+
+      function filterArticles() {
+        let visibleCount = 0;
+
+        articles.forEach(article => {
+          const category = article.getAttribute('data-category');
+          const keywords = (article.getAttribute('data-keywords') || '') + ' ' + article.querySelector('h3').innerText.toLowerCase() + ' ' + article.querySelector('p').innerText.toLowerCase();
+          
+          const matchesCategory = (currentCategory === 'all') || (category === currentCategory);
+          const matchesQuery = !currentQuery || keywords.includes(currentQuery.toLowerCase().trim());
+
+          if (matchesCategory && matchesQuery) {
+            article.style.display = 'flex';
+            visibleCount++;
+          } else {
+            article.style.display = 'none';
+          }
+        });
+
+        if (visibleCount === 0) {
+          noResultsMsg.style.display = 'block';
+          articleCount.textContent = 'Showing 0 articles';
+        } else {
+          noResultsMsg.style.display = 'none';
+          articleCount.textContent = `Showing ${visibleCount} article${visibleCount === 1 ? '' : 's'}`;
+        }
+      }
+
+      filterPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          filterPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          currentCategory = pill.getAttribute('data-category');
+          filterArticles();
+        });
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        currentQuery = e.target.value;
+        filterArticles();
+      });
+    });
+
+    window.handleNewsletterSubmit = function(e) {
+      e.preventDefault();
+      const input = document.getElementById('newsletterEmail');
+      const email = input.value;
+      if (email) {
+        alert('Thank you for subscribing to ClickCodex Engineering Dispatch! Check your inbox for the latest architecture edition.');
+        input.value = '';
+      }
+    };
+  </script>
+</body>
+</html>
