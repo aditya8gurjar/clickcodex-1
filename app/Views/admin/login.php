@@ -83,10 +83,14 @@ if (!defined('BASE_URL')) {
     </form>
 
     <!-- 1-Click Credentials Auto-Fill Box -->
+    <?php
+      $hintEmail = getenv('ADMIN_EMAIL') ?: ($_ENV['ADMIN_EMAIL'] ?? 'admin@clickcodex.com');
+      $hintPass = getenv('ADMIN_PASSWORD') ?: ($_ENV['ADMIN_PASSWORD'] ?? (getenv('ADMIN_PASS') ?: ($_ENV['ADMIN_PASS'] ?? 'admin123')));
+    ?>
     <div class="login-hint-box">
       <div>
         <span>Demo Credentials: </span>
-        <code>admin@clickcodex.com</code> / <code>admin123</code>
+        <code><?= htmlspecialchars($hintEmail) ?></code> / <code><?= htmlspecialchars($hintPass) ?></code>
       </div>
       <button type="button" class="login-fill-btn" onclick="fillDemoCredentials()">Auto-Fill</button>
     </div>
@@ -171,8 +175,8 @@ if (!defined('BASE_URL')) {
     }
 
     function fillDemoCredentials() {
-      document.getElementById('adminEmail').value = 'admin@clickcodex.com';
-      document.getElementById('adminPassword').value = 'admin123';
+      document.getElementById('adminEmail').value = <?= json_encode($hintEmail) ?>;
+      document.getElementById('adminPassword').value = <?= json_encode($hintPass) ?>;
       window.showToast('Demo administrative credentials filled.', 'info', 'Auto-Fill Ready', 2500);
     }
   </script>

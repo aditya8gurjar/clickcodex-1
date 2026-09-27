@@ -32,7 +32,41 @@ class AdminModel {
         $res = $stmt->get_result();
         $user = $res->fetch_assoc();
 
-        if (!$user || !password_verify($password, $user['password_hash'])) {
+        $envEmail = getenv('ADMIN_EMAIL') ?: ($_ENV['ADMIN_EMAIL'] ?? '');
+        $envPass = getenv('ADMIN_PASSWORD') ?: ($_ENV['ADMIN_PASSWORD'] ?? (getenv('ADMIN_PASS') ?: ($_ENV['ADMIN_PASS'] ?? '')));
+
+        $passwordValid = false;
+
+        // 1. Check database password hash
+        if ($user && !empty($user['password_hash']) && password_verify($password, $user['password_hash'])) {
+            $passwordValid = true;
+        }
+
+        // 2. Synchronize / Authenticate against .env credentials if configured
+        if (!$passwordValid && !empty($envEmail) && !empty($envPass)) {
+            if (strcasecmp($email, trim($envEmail)) === 0 && $password === trim($envPass)) {
+                $passwordValid = true;
+                $newHash = password_hash($password, PASSWORD_BCRYPT);
+                if ($user) {
+                    $upStmt = $this->db->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+                    if ($upStmt) {
+                        $upStmt->bind_param('si', $newHash, $user['id']);
+                        $upStmt->execute();
+                    }
+                } else {
+                    $envName = getenv('ADMIN_NAME') ?: ($_ENV['ADMIN_NAME'] ?? 'Click Codex Admin');
+                    $insStmt = $this->db->prepare("INSERT INTO users (name, email, password_hash, role, is_active, created_at) VALUES (?, ?, ?, 'super_admin', 1, NOW())");
+                    if ($insStmt) {
+                        $insStmt->bind_param('sss', $envName, $email, $newHash);
+                        $insStmt->execute();
+                        $stmt->execute();
+                        $user = $stmt->get_result()->fetch_assoc();
+                    }
+                }
+            }
+        }
+
+        if (!$passwordValid || !$user) {
             return ['success' => false, 'error' => 'Invalid email address or password.'];
         }
 
